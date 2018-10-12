@@ -1,6 +1,6 @@
 {
   "name": "proxyee-down-extension-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "proxyee-down extension development js SDK.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/proxyee-down-org/proxyee-down-extension-sdk.git"
   },
-  "author": "monkieWie",
+  "author": "monkeyWie",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/proxyee-down-org/proxyee-down-extension-sdk/issues"
