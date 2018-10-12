@@ -52,7 +52,7 @@ export default {
 
   /**
    * 取目标网站的cookie，支持HttpOnly cookie，需要经过代理服务器才能生效
-   * @param {string} taskForm 要获取的网站url
+   * @param {string} url 要获取的网站url，空则为当前网址
    */
   getCookie(url) {
     return buildPromiseCommon("getCookieAsync", "getCookie", [url || ""]);
