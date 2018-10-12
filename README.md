@@ -33,7 +33,7 @@ async function click() {
 ## API
 
 方法名 | 参数 | 说明
----|---|---|---
+---|---|---
 resolve | (request) | 根据请求解析出响应的相关信息(大小、文件名、是否支持断点下载)
 createTask | (taskForm) | 创建一个任务，会唤醒 proxyee-down 并弹出下载框
 pushTask | (taskForm, onSuccess, onError) | 创建一个任务，不弹下载框直接在后台下载
