@@ -44,6 +44,40 @@ export default {
   },
 
   /**
+   * 刷新一个任务的请求信息
+   * @param {String} id 任务ID
+   * @param {Object} request 下载请求
+   */
+  refreshTask(id, request) {
+    return buildPromiseCommon("refreshTaskAsync", "refreshTask", [id, request]);
+  },
+
+  /**
+   * 暂停一个任务
+   * @param {String} id 任务ID
+   */
+  pauseTask(id) {
+    return buildPromiseCommon("pauseTaskAsync", "pauseTask", [id]);
+  },
+
+  /**
+   * 恢复一个任务
+   * @param {String} id 任务ID
+   */
+  resumeTask(id) {
+    return buildPromiseCommon("resumeTaskAsync", "resumeTask", [id]);
+  },
+
+  /**
+   * 删除一个任务
+   * @param {String} id 任务ID
+   * @param {Boolean} delFile 是否删除文件
+   */
+  deleteTask(id, delFile) {
+    return buildPromiseCommon("deleteTaskAsync", "deleteTask", [id, delFile]);
+  },
+
+  /**
    * 取下载相关配置信息
    */
   getDownConfig() {
@@ -55,6 +89,74 @@ export default {
    * @param {string} url 要获取的网站url，空则为当前网址
    */
   getCookie(url) {
-    return buildPromiseCommon("getCookieAsync", "getCookie", [url || ""]);
+    return buildPromiseCommon("getCookieAsync", "getCookie", [url || "/"]);
   }
 };
+
+/**
+ * 简单模拟jQuery的ajax函数
+ */
+export const jQuery = window.jQuery || {
+  ajax() {
+    let settings
+    if (arguments.length == 2) {
+      settings = arguments[1]
+      settings.url = arguments[0]
+    } else {
+      settings = arguments[0]
+    }
+    const xhr = new XMLHttpRequest()
+    const options = { ...{
+        method: 'GET',
+        url: settings.url,
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        headers: {},
+        data: null,
+        success() {},
+        error() {},
+        complete() {}
+      },
+      ...settings
+    }
+    xhr.open(options.method, options.url)
+    if (options.method.toUpperCase === "POST" ||
+      options.method.toUpperCase === "PUT") {
+      xhr.setRequestHeader('Content-Type', options.contentType)
+    }
+    if (document.cookie) {
+      xhr.setRequestHeader('Cookie', document.cookie)
+    }
+    for (const key in options.headers) {
+      xhr.setRequestHeader(key, options.headers[key])
+    }
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          let result = xhr.responseText
+          if (xhr.getResponseHeader('content-type').indexOf('json') !== -1) {
+            result = JSON.parse(result)
+          }
+          options.success(result, xhr.status, xhr)
+        } else {
+          options.error(xhr, xhr.status)
+        }
+        options.complete(xhr, xhr.status)
+      }
+    }
+    let data
+    if (options.data) {
+      if (options.data.toString() === '[object Object]') {
+        data = ''
+        for (const key in options.data) {
+          if (data) {
+            data += '&'
+          }
+          data += key + '=' + options.data[key]
+        }
+      } else {
+        data = options.data
+      }
+    }
+    xhr.send(data ? data : null)
+  }
+}
