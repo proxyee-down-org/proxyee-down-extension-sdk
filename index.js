@@ -2,21 +2,17 @@ const buildPromiseCommon = (asyncFunc, syncFunc, args) => {
   return new Promise((resolve, reject) => {
     if (pdown) {
       if (pdown[asyncFunc]) {
-        pdown[asyncFunc](
-          ...args,
-          response => resolve(response),
-          error => reject(error)
-        );
+        pdown[asyncFunc](...args, response => resolve(response), error => reject(error))
       } else if (pdown[syncFunc]) {
         try {
-          resolve(pdown[syncFunc](...args));
+          resolve(pdown[syncFunc](...args))
         } catch (error) {
-          reject(error);
+          reject(error)
         }
       }
     }
-  });
-};
+  })
+}
 
 export default {
   /**
@@ -24,7 +20,7 @@ export default {
    * @param {Object} request 下载请求
    */
   resolve(request) {
-    return buildPromiseCommon("resolveAsync", "resolve", [request]);
+    return buildPromiseCommon('resolveAsync', 'resolve', [request])
   },
 
   /**
@@ -32,7 +28,7 @@ export default {
    * @param {Object} taskForm 下载任务请求
    */
   createTask(taskForm) {
-    return buildPromiseCommon("createTaskAsync", "createTask", [taskForm]);
+    return buildPromiseCommon('createTaskAsync', 'createTask', [taskForm])
   },
 
   /**
@@ -40,7 +36,7 @@ export default {
    * @param {Object} taskForm 下载任务请求
    */
   pushTask(taskForm) {
-    return buildPromiseCommon("pushTask", "", [taskForm]);
+    return buildPromiseCommon('pushTask', '', [taskForm])
   },
 
   /**
@@ -49,7 +45,7 @@ export default {
    * @param {Object} request 下载请求
    */
   refreshTask(id, request) {
-    return buildPromiseCommon("refreshTaskAsync", "refreshTask", [id, request]);
+    return buildPromiseCommon('refreshTaskAsync', 'refreshTask', [id, request])
   },
 
   /**
@@ -57,7 +53,7 @@ export default {
    * @param {String} id 任务ID
    */
   pauseTask(id) {
-    return buildPromiseCommon("pauseTaskAsync", "pauseTask", [id]);
+    return buildPromiseCommon('pauseTaskAsync', 'pauseTask', [id])
   },
 
   /**
@@ -65,7 +61,7 @@ export default {
    * @param {String} id 任务ID
    */
   resumeTask(id) {
-    return buildPromiseCommon("resumeTaskAsync", "resumeTask", [id]);
+    return buildPromiseCommon('resumeTaskAsync', 'resumeTask', [id])
   },
 
   /**
@@ -74,14 +70,14 @@ export default {
    * @param {Boolean} delFile 是否删除文件
    */
   deleteTask(id, delFile) {
-    return buildPromiseCommon("deleteTaskAsync", "deleteTask", [id, delFile]);
+    return buildPromiseCommon('deleteTaskAsync', 'deleteTask', [id, delFile])
   },
 
   /**
    * 取下载相关配置信息
    */
   getDownConfig() {
-    return buildPromiseCommon("getDownConfigAsync", "getDownConfig", []);
+    return buildPromiseCommon('getDownConfigAsync', 'getDownConfig', [])
   },
 
   /**
@@ -89,9 +85,9 @@ export default {
    * @param {string} url 要获取的网站url，空则为当前网址
    */
   getCookie(url) {
-    return buildPromiseCommon("getCookieAsync", "getCookie", [url || "/"]);
+    return buildPromiseCommon('getCookieAsync', 'getCookie', [url || '/'])
   }
-};
+}
 
 /**
  * 简单模拟jQuery的ajax函数
@@ -106,12 +102,14 @@ export const jQuery = window.jQuery || {
       settings = arguments[0]
     }
     const xhr = new XMLHttpRequest()
-    const options = { ...{
+    const options = {
+      ...{
         method: 'GET',
         url: settings.url,
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         headers: {},
         data: null,
+        dataType: null,
         success() {},
         error() {},
         complete() {}
@@ -119,8 +117,7 @@ export const jQuery = window.jQuery || {
       ...settings
     }
     xhr.open(options.method, options.url)
-    if (options.method.toUpperCase === "POST" ||
-      options.method.toUpperCase === "PUT") {
+    if (options.method.toUpperCase === 'POST' || options.method.toUpperCase === 'PUT') {
       xhr.setRequestHeader('Content-Type', options.contentType)
     }
     if (document.cookie) {
@@ -133,7 +130,11 @@ export const jQuery = window.jQuery || {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           let result = xhr.responseText
-          if (xhr.getResponseHeader('content-type').indexOf('json') !== -1) {
+          if (options.dataType) {
+            if (options.dataType.toUpperCase() === 'JSON') {
+              result = JSON.parse(result)
+            }
+          } else if (xhr.getResponseHeader('content-type').match(/^.*json.*$/i)) {
             result = JSON.parse(result)
           }
           options.success(result, xhr.status, xhr)
