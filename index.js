@@ -116,9 +116,10 @@ export const jQuery = window.jQuery || {
       },
       ...settings
     }
-    xhr.open(options.method, options.url)
+    let hasRequestBody = false
     if (options.method.toUpperCase === 'POST' || options.method.toUpperCase === 'PUT') {
       xhr.setRequestHeader('Content-Type', options.contentType)
+      hasRequestBody = true
     }
     if (document.cookie) {
       xhr.setRequestHeader('Cookie', document.cookie)
@@ -158,6 +159,19 @@ export const jQuery = window.jQuery || {
         data = options.data
       }
     }
-    xhr.send(data ? data : null)
+    if(!hasRequestBody){
+      if(options.url.indexOf('?') === -1){
+        options.url += '?'
+      }
+      if(options.url.indexOf('&') !== -1){
+        options.url += '&'
+      }
+      options.url += data
+      xhr.open(options.method, options.url)
+      xhr.send()
+    }else{
+      xhr.open(options.method, options.url)
+      xhr.send(data ? data : null)
+    }
   }
 }

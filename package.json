@@ -1,6 +1,6 @@
 {
   "name": "proxyee-down-extension-sdk",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "proxyee-down extension development js SDK.",
   "main": "index.js",
   "devDependencies": {
