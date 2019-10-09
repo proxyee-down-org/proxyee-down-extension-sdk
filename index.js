@@ -15,6 +15,14 @@ const buildPromiseCommon = (asyncFunc, syncFunc, args) => {
 }
 
 export default {
+/**
+   * 通过代理服务器模拟http请求，防止浏览器ajax跨域问题
+   * @param {Object} request http请求
+   */
+  fetch(request) {
+    return buildPromiseCommon('fetchAsync', '', [request])
+  },
+
   /**
    * 根据下载请求解析响应相关内容
    * @param {Object} request 下载请求
